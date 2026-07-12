@@ -1,4 +1,4 @@
-// AI news engine: pulls market/crypto headlines from RSS, has Claude score
+// AI news engine: pulls market/crypto headlines from RSS, has Gemini score
 // each item for sentiment + impact and map it to the affected baskets, then
 // stores the digest in Mongo (consumed by the web Labs page and Telegram bot).
 

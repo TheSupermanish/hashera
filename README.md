@@ -16,10 +16,10 @@ Built for the **On-Chain Horizon Hackathon** (HashKey Chain · DeFi + AI tracks)
 - **Synthetic RWA engine**: each equity (Intel, NVIDIA, Sony, ...) is an ERC-20
   `RWAToken` minted/burned only by basket vaults against USDC collateral at the
   `PriceOracle` price. Spot exposure, no margin, no liquidation.
-- **AI news engine**: Claude reads market headlines, keeps only what is
+- **AI news engine**: Gemini reads market headlines, keeps only what is
   material to a basket, scores sentiment + impact, and maps it to affected
   baskets. Shown in the web app (Labs) and pushed to Telegram.
-- **AI rebalancing agent**: Claude reviews performance + news per basket, and
+- **AI rebalancing agent**: Gemini reviews performance + news per basket, and
   can execute `BasketVault.rebalance()` on-chain (guard-railed: ±5% max move
   per asset, weights must sum to 100%, 7-day cooldown). Every rebalance is
   recorded on a public timeline and broadcast to subscribers.
@@ -49,7 +49,7 @@ moltiply/
 └── server/           Express + grammY + node-cron + ethers
     ├── price engine  crypto spot via CoinGecko, equity simulator (demo mode),
     │                 pushes prices on-chain to PriceOracle every 15 min
-    ├── news engine   RSS → Claude digest → MongoDB → Telegram push
+    ├── news engine   RSS → Gemini digest → MongoDB → Telegram push
     ├── AI rebalancer daily agent run, on-chain execution via MANAGER_ROLE
     └── Telegram bot  quotes, subscriptions, alerts
 ```
@@ -89,7 +89,7 @@ Verify on Blockscout (optional):
 ```bash
 cd web
 npm install
-cp .env.example .env.local             # MONGODB_URI, ANTHROPIC_API_KEY
+cp .env.example .env.local             # MONGODB_URI, GEMINI_API_KEY (or Vertex ADC)
 npm run dev
 curl -X POST http://localhost:3000/api/dev/seed   # seed baskets + 1y price history
 ```
@@ -102,7 +102,7 @@ HashKey Chain), grab test USDC from the in-app faucet button, and invest.
 ```bash
 cd server
 npm install
-cp .env.example .env    # TELEGRAM_BOT_TOKEN, ANTHROPIC_API_KEY,
+cp .env.example .env    # TELEGRAM_BOT_TOKEN, GEMINI_API_KEY (or Vertex ADC),
                         # ORACLE_UPDATER_KEY, REBALANCER_KEY, MONGODB_URI
 npm start
 ```
@@ -133,7 +133,7 @@ curl -X POST localhost:4000/api/tick/oracle
 
 - **DeFi track**: on-chain basket vaults, oracle-priced synthetic RWAs, USDC
   settlement on HashKey Chain mainnet.
-- **AI track**: Claude-powered news digestion, portfolio Q&A, and an
+- **AI track**: Gemini-powered news digestion, portfolio Q&A, and an
   autonomous guard-railed rebalancing agent with on-chain execution.
 - **RWA**: tokenized US/JP equities under the same institutional-RWA thesis as
   HashKey Chain's ecosystem (Bosera tokenized MMF, GF Token).
