@@ -2,9 +2,9 @@
 // each item for sentiment + impact and map it to the affected baskets, then
 // stores the digest in Mongo (consumed by the web Labs page and Telegram bot).
 
-const Parser = require("rss-parser");
-const { generate, hasAI } = require("./ai");
-const { NewsItem, Basket } = require("./models");
+import Parser from "rss-parser";
+import { generate, hasAI } from "./ai";
+import { NewsItem, Basket } from "./models";
 
 const parser = new Parser({ timeout: 15000 });
 
@@ -14,8 +14,16 @@ const FEEDS = [
   { url: "https://finance.yahoo.com/news/rssindex", source: "Yahoo Finance" },
 ];
 
-async function fetchHeadlines(limit = 8) {
-  const items = [];
+interface Headline {
+  title?: string;
+  url?: string;
+  source: string;
+  publishedAt: Date;
+  snippet: string;
+}
+
+export async function fetchHeadlines(limit = 8): Promise<Headline[]> {
+  const items: Headline[] = [];
   for (const feed of FEEDS) {
     try {
       const parsed = await parser.parseURL(feed.url);
@@ -29,13 +37,26 @@ async function fetchHeadlines(limit = 8) {
         });
       }
     } catch (e) {
-      console.warn(`[news] feed ${feed.source} failed: ${e.message}`);
+      console.warn(`[news] feed ${feed.source} failed: ${(e as Error).message}`);
     }
   }
   return items.filter((i) => i.title);
 }
 
-async function digestNews() {
+/** One scored item as returned by the AI digest (untrusted shape). */
+interface DigestItem {
+  title?: string;
+  url?: string;
+  source?: string;
+  publishedAt?: string;
+  summary?: string;
+  sentiment?: string;
+  impact?: string;
+  tickers?: string[];
+  basketSlugs?: string[];
+}
+
+export async function digestNews(): Promise<{ added: number }> {
   if (!hasAI()) {
     console.warn("[news] GEMINI_API_KEY not set, skipping digest");
     return { added: 0 };
@@ -45,7 +66,7 @@ async function digestNews() {
   if (!headlines.length) return { added: 0 };
 
   // Skip already-ingested URLs.
-  const fresh = [];
+  const fresh: Headline[] = [];
   for (const h of headlines) {
     if (!(await NewsItem.exists({ $or: [{ url: h.url }, { title: h.title }] }))) fresh.push(h);
   }
@@ -77,12 +98,12 @@ async function digestNews() {
       `"basketSlugs": affected basket slugs}. Return [] if nothing is relevant.`,
   });
 
-  let items = [];
+  let items: DigestItem[] = [];
   try {
-    items = JSON.parse(text.replace(/^```(json)?|```$/g, "").trim());
-    if (!Array.isArray(items)) items = [];
+    const parsed = JSON.parse(text.replace(/^```(json)?|```$/g, "").trim());
+    if (Array.isArray(parsed)) items = parsed;
   } catch (e) {
-    console.warn(`[news] could not parse AI response: ${e.message}`);
+    console.warn(`[news] could not parse AI response: ${(e as Error).message}`);
     return { added: 0 };
   }
 
@@ -95,8 +116,8 @@ async function digestNews() {
       source: `${item.source} · AI Digest`,
       publishedAt: item.publishedAt ? new Date(item.publishedAt) : new Date(),
       summary: item.summary,
-      sentiment: ["bullish", "bearish", "neutral"].includes(item.sentiment) ? item.sentiment : "neutral",
-      impact: ["high", "medium", "low"].includes(item.impact) ? item.impact : "medium",
+      sentiment: ["bullish", "bearish", "neutral"].includes(item.sentiment as string) ? item.sentiment : "neutral",
+      impact: ["high", "medium", "low"].includes(item.impact as string) ? item.impact : "medium",
       tickers: item.tickers ?? [],
       basketSlugs: item.basketSlugs ?? [],
       sentToTelegram: false,
@@ -106,5 +127,3 @@ async function digestNews() {
   console.log(`[news] digested ${added} new items`);
   return { added };
 }
-
-module.exports = { digestNews, fetchHeadlines };

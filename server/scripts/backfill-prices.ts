@@ -2,25 +2,24 @@
 // from Yahoo Finance for every tracked asset, and (if a key is present) force
 // the on-chain oracle to the latest real price.
 //
-//   node scripts/backfill-prices.js
+//   npm run backfill
 
-require("dotenv").config();
-const { ethers } = require("ethers");
-const { connect } = require("../lib/db");
-const { PricePoint } = require("../lib/models");
-const { yahooHistory, YAHOO } = require("../lib/prices");
-
-let deployment = null;
-try { deployment = require("../deployment.json"); } catch {}
+import "dotenv/config";
+import { ethers } from "ethers";
+import { connect } from "../lib/db";
+import { PricePoint } from "../lib/models";
+import { yahooHistory, YAHOO, type HistoryPoint } from "../lib/prices";
+import { loadDeployment } from "../lib/deployment";
 
 const ORACLE_ABI = ["function setPriceForce(address asset, uint256 price) external"];
 
-function syntheticHSK(days = 366) {
-  const out = [];
-  const now = new Date(); now.setUTCHours(0, 0, 0, 0);
+function syntheticHSK(days = 366): HistoryPoint[] {
+  const out: HistoryPoint[] = [];
+  const now = new Date();
+  now.setUTCHours(0, 0, 0, 0);
   let v = 0.42;
   for (let i = days - 1; i >= 0; i--) {
-    v = Math.max(0.05, v * Math.exp(0.7 / 252 - 0.5 * 0.85 * 0.85 / 252 + 0.85 * Math.sqrt(1 / 252) * (Math.random() * 2 - 1)));
+    v = Math.max(0.05, v * Math.exp(0.7 / 252 - (0.5 * 0.85 * 0.85) / 252 + 0.85 * Math.sqrt(1 / 252) * (Math.random() * 2 - 1)));
     out.push({ ts: new Date(now.getTime() - i * 86400_000), price: +v.toFixed(5) });
   }
   return out;
@@ -28,21 +27,25 @@ function syntheticHSK(days = 366) {
 
 async function main() {
   await connect();
+  const deployment = loadDeployment();
   const symbols = [...Object.keys(YAHOO), "cHSK"];
-  const latest = {};
+  const latest: Record<string, number> = {};
 
   for (const symbol of symbols) {
     try {
-      let hist;
+      let hist: HistoryPoint[];
       if (symbol === "cHSK") hist = syntheticHSK();
       else hist = await yahooHistory(YAHOO[symbol], "1y");
-      if (!hist.length) { console.warn(`[backfill] ${symbol}: empty`); continue; }
+      if (!hist.length) {
+        console.warn(`[backfill] ${symbol}: empty`);
+        continue;
+      }
       await PricePoint.deleteMany({ symbol });
       await PricePoint.insertMany(hist.map((h) => ({ symbol, ts: h.ts, price: h.price })));
       latest[symbol] = hist[hist.length - 1].price;
       console.log(`[backfill] ${symbol} (${YAHOO[symbol] ?? "synthetic"}): ${hist.length} days, last $${latest[symbol]}`);
     } catch (e) {
-      console.warn(`[backfill] ${symbol} failed: ${e.message}`);
+      console.warn(`[backfill] ${symbol} failed: ${(e as Error).message}`);
     }
   }
 
@@ -60,7 +63,7 @@ async function main() {
         await tx.wait();
         pushed++;
       } catch (e) {
-        console.warn(`[backfill] oracle ${symbol} failed: ${e.message}`);
+        console.warn(`[backfill] oracle ${symbol} failed: ${(e as Error).message}`);
       }
     }
     console.log(`[backfill] forced ${pushed} on-chain oracle prices`);
@@ -72,4 +75,7 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

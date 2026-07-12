@@ -1,11 +1,12 @@
-const { PricePoint } = require("./models");
+import { PricePoint } from "./models";
+import type { Allocation, Quote } from "../types";
 
-async function latest(symbol, n = 2) {
+async function latest(symbol: string, n = 2) {
   return PricePoint.find({ symbol }).sort({ ts: -1 }).limit(n).lean();
 }
 
 /** { price, changePct24h } for one symbol. */
-async function quote(symbol) {
+export async function quote(symbol: string): Promise<Quote | null> {
   const [now, prev] = await latest(symbol, 2);
   if (!now) return null;
   const p = prev?.price ?? now.price;
@@ -16,7 +17,7 @@ async function quote(symbol) {
 }
 
 /** Weighted basket return (%) over `days` using daily closes. */
-async function basketReturn(allocation, days) {
+export async function basketReturn(allocation: Allocation[], days: number): Promise<number> {
   const since = new Date(Date.now() - days * 86400_000);
   let total = 0;
   let weight = 0;
@@ -32,5 +33,3 @@ async function basketReturn(allocation, days) {
   if (!weight) return 0;
   return +((total / weight) * 100).toFixed(2);
 }
-
-module.exports = { quote, basketReturn };

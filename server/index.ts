@@ -1,21 +1,21 @@
 // Moltiply server: Telegram bot + market data engine + AI news digester +
 // AI rebalancing agent + on-chain oracle updater, in one Express process.
 
-require("dotenv").config();
-const express = require("express");
-const cron = require("node-cron");
-const { connect } = require("./lib/db");
-const { updatePrices, pushOracle } = require("./lib/prices");
-const { digestNews } = require("./lib/news");
-const { startBot, broadcastNews } = require("./lib/telegram");
-const { runRebalancer } = require("./lib/rebalancer");
+import "dotenv/config";
+import express, { type Request, type Response, type NextFunction } from "express";
+import cron from "node-cron";
+import { connect } from "./lib/db";
+import { updatePrices, pushOracle } from "./lib/prices";
+import { digestNews } from "./lib/news";
+import { startBot, broadcastNews } from "./lib/telegram";
+import { runRebalancer } from "./lib/rebalancer";
 
 const PORT = process.env.PORT || 4000;
 const app = express();
 app.use(express.json());
 
 // Simple bearer guard for manual trigger endpoints.
-function guard(req, res, next) {
+function guard(req: Request, res: Response, next: NextFunction) {
   const token = process.env.ADMIN_TOKEN;
   if (token && req.headers.authorization !== `Bearer ${token}`) {
     return res.status(401).json({ error: "unauthorized" });
@@ -23,39 +23,39 @@ function guard(req, res, next) {
   next();
 }
 
-app.get("/health", (_req, res) => res.json({ ok: true, ts: new Date().toISOString() }));
+app.get("/health", (_req: Request, res: Response) => res.json({ ok: true, ts: new Date().toISOString() }));
 
-app.post("/api/tick/prices", guard, async (_req, res) => {
+app.post("/api/tick/prices", guard, async (_req: Request, res: Response) => {
   try {
     res.json(await updatePrices());
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    res.status(500).json({ error: (e as Error).message });
   }
 });
 
-app.post("/api/tick/oracle", guard, async (_req, res) => {
+app.post("/api/tick/oracle", guard, async (_req: Request, res: Response) => {
   try {
     res.json(await pushOracle());
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    res.status(500).json({ error: (e as Error).message });
   }
 });
 
-app.post("/api/tick/news", guard, async (_req, res) => {
+app.post("/api/tick/news", guard, async (_req: Request, res: Response) => {
   try {
     const digest = await digestNews();
     const pushed = await broadcastNews();
     res.json({ ...digest, ...pushed });
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    res.status(500).json({ error: (e as Error).message });
   }
 });
 
-app.post("/api/tick/rebalance", guard, async (req, res) => {
+app.post("/api/tick/rebalance", guard, async (req: Request, res: Response) => {
   try {
     res.json(await runRebalancer({ execute: req.query.execute === "1" }));
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    res.status(500).json({ error: (e as Error).message });
   }
 });
 

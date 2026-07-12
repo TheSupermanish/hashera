@@ -6,30 +6,48 @@
 //      Gemini CLI (GOOGLE_CLOUD_PROJECT / GOOGLE_CLOUD_LOCATION).
 //   2. Google AI Studio API key when GEMINI_API_KEY is set.
 
-const { GoogleAuth } = require("google-auth-library");
+import { GoogleAuth } from "google-auth-library";
 
 const USE_VERTEX = process.env.GOOGLE_GENAI_USE_VERTEXAI === "true";
 const PROJECT = process.env.GOOGLE_CLOUD_PROJECT;
 const LOCATION = process.env.GOOGLE_CLOUD_LOCATION || "global";
-const MODEL = process.env.AI_MODEL || "gemini-2.5-flash";
+export const MODEL = process.env.AI_MODEL || "gemini-2.5-flash";
 
-let _auth;
-function auth() {
+let _auth: GoogleAuth | null = null;
+function auth(): GoogleAuth {
   if (!_auth) {
     _auth = new GoogleAuth({ scopes: ["https://www.googleapis.com/auth/cloud-platform"] });
   }
   return _auth;
 }
 
-function hasAI() {
+export function hasAI(): boolean {
   return USE_VERTEX ? !!PROJECT : !!process.env.GEMINI_API_KEY;
 }
 
-function buildBody({ system, user, maxTokens, json }) {
-  const body = {
+interface GenerateOpts {
+  system?: string;
+  user: string;
+  maxTokens?: number;
+  json?: boolean;
+}
+
+interface GeminiBody {
+  contents: { role: string; parts: { text: string }[] }[];
+  generationConfig: {
+    maxOutputTokens: number;
+    temperature: number;
+    thinkingConfig: { thinkingBudget: number };
+    responseMimeType?: string;
+  };
+  system_instruction?: { parts: { text: string }[] };
+}
+
+function buildBody({ system, user, maxTokens, json }: Required<Pick<GenerateOpts, "user">> & GenerateOpts): GeminiBody {
+  const body: GeminiBody = {
     contents: [{ role: "user", parts: [{ text: user }] }],
     generationConfig: {
-      maxOutputTokens: maxTokens,
+      maxOutputTokens: maxTokens ?? 2000,
       temperature: 0.4,
       // Disable gemini-2.5 "thinking" so a tight output budget is never spent
       // on hidden reasoning (which can yield empty answers), and responses are
@@ -42,15 +60,15 @@ function buildBody({ system, user, maxTokens, json }) {
   return body;
 }
 
-function extractText(data) {
+interface GeminiResponse {
+  candidates?: { content?: { parts?: { text?: string }[] } }[];
+}
+
+function extractText(data: GeminiResponse | undefined): string {
   return data?.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "";
 }
 
-/**
- * @param {{system?: string, user: string, maxTokens?: number, json?: boolean}} opts
- * @returns {Promise<string>}
- */
-async function generate({ system, user, maxTokens = 2000, json = false }) {
+export async function generate({ system, user, maxTokens = 2000, json = false }: GenerateOpts): Promise<string> {
   const body = buildBody({ system, user, maxTokens, json });
 
   if (USE_VERTEX) {
@@ -61,7 +79,7 @@ async function generate({ system, user, maxTokens = 2000, json = false }) {
         : `https://${LOCATION}-aiplatform.googleapis.com`;
     const url = `${host}/v1/projects/${PROJECT}/locations/${LOCATION}/publishers/google/models/${MODEL}:generateContent`;
     const client = await auth().getClient();
-    const res = await client.request({ url, method: "POST", data: body, timeout: 30_000 });
+    const res = await client.request<GeminiResponse>({ url, method: "POST", data: body, timeout: 30_000 });
     return extractText(res.data);
   }
 
@@ -77,7 +95,5 @@ async function generate({ system, user, maxTokens = 2000, json = false }) {
     }
   );
   if (!res.ok) throw new Error(`gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  return extractText(await res.json());
+  return extractText((await res.json()) as GeminiResponse);
 }
-
-module.exports = { generate, hasAI, MODEL };

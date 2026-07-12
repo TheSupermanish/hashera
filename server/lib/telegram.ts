@@ -1,24 +1,24 @@
 // Moltiply Telegram bot (grammY): basket quotes, AI news digests,
 // subscriptions, and push alerts for news + AI rebalances.
 
-const { Bot } = require("grammy");
-const { Basket, NewsItem, Subscriber } = require("./models");
-const { quote, basketReturn } = require("./metrics");
+import { Bot, type Context } from "grammy";
+import { Basket, NewsItem, Subscriber, type RebalanceEventDoc } from "./models";
+import { quote, basketReturn } from "./metrics";
 
 const WEB_URL = process.env.WEB_URL || "http://localhost:3000";
 
-let bot = null;
+let bot: Bot | null = null;
 
-const fmtPct = (v) => `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
-const arrow = (v) => (v >= 0 ? "🟢" : "🔴");
+const fmtPct = (v: number) => `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
+const arrow = (v: number) => (v >= 0 ? "🟢" : "🔴");
 
-function esc(s) {
-  return String(s).replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]));
+function esc(s: unknown): string {
+  return String(s).replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c] ?? c));
 }
 
-async function upsertSubscriber(ctx) {
+async function upsertSubscriber(ctx: Context) {
   return Subscriber.findOneAndUpdate(
-    { chatId: ctx.chat.id },
+    { chatId: ctx.chat!.id },
     {
       $set: {
         username: ctx.from?.username,
@@ -30,7 +30,7 @@ async function upsertSubscriber(ctx) {
   );
 }
 
-function registerHandlers(b) {
+function registerHandlers(b: Bot) {
   b.command("start", async (ctx) => {
     await upsertSubscriber(ctx);
     await ctx.reply(
@@ -103,30 +103,30 @@ function registerHandlers(b) {
     const bk = await Basket.findOne({ slug }).lean();
     if (!bk) return ctx.reply("Unknown basket slug. See /baskets for the list.");
     await upsertSubscriber(ctx);
-    await Subscriber.updateOne({ chatId: ctx.chat.id }, { $addToSet: { baskets: slug } });
+    await Subscriber.updateOne({ chatId: ctx.chat!.id }, { $addToSet: { baskets: slug } });
     await ctx.reply(`✅ Subscribed to <b>${esc(bk.name)}</b>. You'll get rebalance + news alerts.`, { parse_mode: "HTML" });
   });
 
   b.command("unsubscribe", async (ctx) => {
     const slug = (ctx.match ?? "").trim();
-    await Subscriber.updateOne({ chatId: ctx.chat.id }, { $pull: { baskets: slug } });
+    await Subscriber.updateOne({ chatId: ctx.chat!.id }, { $pull: { baskets: slug } });
     await ctx.reply(`Removed ${slug}.`);
   });
 
   b.command("mysubs", async (ctx) => {
-    const sub = await Subscriber.findOne({ chatId: ctx.chat.id }).lean();
+    const sub = await Subscriber.findOne({ chatId: ctx.chat!.id }).lean();
     if (!sub?.baskets?.length) return ctx.reply("No basket subscriptions. Use /subscribe <slug>.");
     await ctx.reply(`Your baskets:\n${sub.baskets.map((s) => `· ${s}`).join("\n")}`);
   });
 
   b.command("mute", async (ctx) => {
-    await Subscriber.updateOne({ chatId: ctx.chat.id }, { $set: { newsAlerts: false } });
+    await Subscriber.updateOne({ chatId: ctx.chat!.id }, { $set: { newsAlerts: false } });
     await ctx.reply("🔕 News digests muted. /unmute to re-enable.");
   });
 
   b.command("unmute", async (ctx) => {
     await upsertSubscriber(ctx);
-    await Subscriber.updateOne({ chatId: ctx.chat.id }, { $set: { newsAlerts: true } });
+    await Subscriber.updateOne({ chatId: ctx.chat!.id }, { $set: { newsAlerts: true } });
     await ctx.reply("🔔 News digests enabled.");
   });
 
@@ -135,7 +135,7 @@ function registerHandlers(b) {
   );
 }
 
-async function startBot() {
+export async function startBot(): Promise<Bot | null> {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token) {
     console.warn("[telegram] TELEGRAM_BOT_TOKEN not set, bot disabled");
@@ -149,7 +149,7 @@ async function startBot() {
   return bot;
 }
 
-async function broadcast(text, filter = {}) {
+export async function broadcast(text: string, filter: Record<string, unknown> = {}): Promise<{ sent: number }> {
   if (!bot) return { sent: 0 };
   const subs = await Subscriber.find({ active: true, ...filter }).lean();
   let sent = 0;
@@ -161,7 +161,7 @@ async function broadcast(text, filter = {}) {
       });
       sent++;
     } catch (e) {
-      if (/blocked|chat not found/i.test(e.message)) {
+      if (/blocked|chat not found/i.test((e as Error).message)) {
         await Subscriber.updateOne({ chatId: s.chatId }, { $set: { active: false } });
       }
     }
@@ -171,7 +171,7 @@ async function broadcast(text, filter = {}) {
 }
 
 /** Push unsent high/medium-impact news items to subscribers. */
-async function broadcastNews() {
+export async function broadcastNews(): Promise<{ sent: number }> {
   if (!bot) return { sent: 0 };
   const items = await NewsItem.find({
     sentToTelegram: false,
@@ -198,14 +198,12 @@ async function broadcastNews() {
 }
 
 /** Alert subscribers of a basket about an AI rebalance. */
-async function broadcastRebalance(event, basketName) {
+export async function broadcastRebalance(event: RebalanceEventDoc, basketName: string): Promise<{ sent: number }> {
   const text =
     `⚖️ <b>AI Rebalance — ${esc(basketName)}</b>\n\n${esc(event.reason)}\n\n` +
     `<b>New allocation</b>\n` +
-    event.newAllocation.map((a) => `· ${a.symbol} ${(a.weightBps / 100).toFixed(0)}%`).join("\n") +
+    (event.newAllocation ?? []).map((a) => `· ${a.symbol} ${(a.weightBps / 100).toFixed(0)}%`).join("\n") +
     (event.txHash ? `\n\ntx: ${event.txHash}` : "") +
     `\n${WEB_URL}/baskets/${event.basketSlug}`;
   return broadcast(text, { rebalanceAlerts: true, baskets: event.basketSlug });
 }
-
-module.exports = { startBot, broadcast, broadcastNews, broadcastRebalance };
