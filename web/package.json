@@ -13,7 +13,7 @@
     "google-auth-library": "^10.9.0",
     "lucide-react": "^1.23.0",
     "mongoose": "^9.7.4",
-    "next": "14.2.35",
+    "next": "15.5.18",
     "react": "^18",
     "react-dom": "^18",
     "recharts": "^3.9.2",
