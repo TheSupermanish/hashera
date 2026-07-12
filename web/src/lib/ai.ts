@@ -8,7 +8,15 @@ const MODEL = process.env.AI_MODEL || "gemini-2.5-flash";
 
 let _auth: GoogleAuth | null = null;
 function auth() {
-  if (!_auth) _auth = new GoogleAuth({ scopes: ["https://www.googleapis.com/auth/cloud-platform"] });
+  if (!_auth) {
+    // On Vercel/hosted there is no gcloud ADC, so accept a service-account key
+    // JSON via env; fall back to ADC (local gcloud login) when it's absent.
+    const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+    _auth = new GoogleAuth({
+      scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+      ...(raw ? { credentials: JSON.parse(raw) } : {}),
+    });
+  }
   return _auth;
 }
 
