@@ -203,7 +203,8 @@ export default function StockDetailPage({ params }: { params: { symbol: string }
 
           <p className="mt-3 px-1 text-xs leading-relaxed text-muted-foreground">
             Synthetic spot exposure minted against USDC at the oracle price. No leverage, no
-            liquidation. Chart data by TradingView.
+            liquidation. USDC settlement routes through HSP (HashKey Settlement Protocol) mandates
+            for compliant, receipt-backed transfers. Chart data by TradingView.
           </p>
         </div>
       </div>

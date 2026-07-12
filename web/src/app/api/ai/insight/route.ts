@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     const text = await generate({
       maxTokens: 700,
       system:
-        "You are the Moltiply portfolio AI on HashKey Chain. You analyze tokenized RWA investment baskets. " +
+        "You are the Hashera portfolio AI on HashKey Chain. You analyze tokenized RWA investment baskets. " +
         "Be concise, concrete and numeric. Never give personalized financial advice; frame everything as analysis. " +
         "Answer in short paragraphs or tight bullet lists.",
       user: prompt,

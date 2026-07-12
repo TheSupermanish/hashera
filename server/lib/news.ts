@@ -83,7 +83,7 @@ export async function digestNews(): Promise<{ added: number }> {
     maxTokens: 3000,
     json: true,
     system:
-      "You are the Moltiply market intelligence engine for tokenized RWA baskets on HashKey Chain. " +
+      "You are the Hashera market intelligence engine for tokenized RWA baskets on HashKey Chain. " +
       "You receive raw headlines and the platform's basket catalog. Select ONLY headlines that are " +
       "materially relevant to at least one basket's holdings or theme (equities, semis, AI capex, " +
       "Japan, crypto majors, RWA/tokenization policy).",

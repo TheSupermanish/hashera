@@ -23,7 +23,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Moltiply | Invest in RWA Baskets, directly in your wallet",
+  title: "Hashera | Invest in RWA Baskets, directly in your wallet",
   description:
     "Diversified tokenized RWA portfolios reflecting themes, strategies, and narratives. Invest in one click, directly to your wallet, on HashKey Chain.",
 };
@@ -57,8 +57,9 @@ export default function RootLayout({
                 AI news &amp; rebalance alerts on Telegram
               </a>
               <p className="text-xs text-cesto-desc">
-                Moltiply · DeFAI RWA indexes on HashKey Chain · Built for the On-Chain Horizon
-                Hackathon. Backtested results are hypothetical. Nothing here is financial advice.
+                Hashera · DeFAI RWA indexes on HashKey Chain · USDC settlement via HSP · Built for
+                the On-Chain Horizon Hackathon. Backtested results are hypothetical. Nothing here is
+                financial advice.
               </p>
             </div>
           </footer>

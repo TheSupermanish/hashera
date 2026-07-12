@@ -72,7 +72,7 @@ export function BasketAI({
             <path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8" />
           </svg>
         </span>
-        <h2 className="font-manrope text-xl font-semibold text-white">Moltiply AI</h2>
+        <h2 className="font-manrope text-xl font-semibold text-white">Hashera AI</h2>
         <span className="rounded-full bg-cesto-green px-1.5 py-0.5 text-[10px] font-semibold leading-none text-[#091313]">
           Beta
         </span>
@@ -113,7 +113,7 @@ export function BasketAI({
           <div className="rounded-xl border border-cesto-border bg-card/40 p-5">
             <h3 className="font-manrope font-semibold text-white">Ask the Portfolio AI</h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              Moltiply AI (Gemini) analyzes live allocations, prices and news for {name}.
+              Hashera AI (Gemini) analyzes live allocations, prices and news for {name}.
             </p>
             <textarea
               value={question}

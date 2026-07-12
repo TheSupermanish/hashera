@@ -11,7 +11,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { DEPLOYMENT, ERC20_ABI, VAULT_ABI } from "@/lib/contracts";
-import { activeChain } from "@/lib/chain";
+import { activeChain, explorerTx } from "@/lib/chain";
 import { fmtPct, fmtUsd } from "@/lib/format";
 
 type Mode = "invest" | "withdraw";
@@ -39,6 +39,10 @@ export function InvestPanel({
   const [mode, setMode] = useState<Mode>("invest");
   const [amount, setAmount] = useState<string>(String(minInvest));
   const [pendingAction, setPendingAction] = useState<"" | "approve" | "invest" | "redeem" | "faucet">("");
+  // Persisted confirmation of the last completed tx. Kept separate from wagmi's
+  // live receipt state because the effect below calls reset() (clearing txHash),
+  // which would otherwise wipe the "confirmed" banner the instant it appears.
+  const [receipt, setReceipt] = useState<{ hash: `0x${string}`; action: "approve" | "invest" | "redeem" | "faucet" } | null>(null);
 
   const parsedAmount = useMemo(() => {
     try {
@@ -105,6 +109,7 @@ export function InvestPanel({
         }),
       }).catch(() => {});
     }
+    if (pendingAction) setReceipt({ hash: txHash, action: pendingAction });
     setPendingAction("");
     reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -126,6 +131,7 @@ export function InvestPanel({
   const insufficient = isConnected && Number(amount || 0) > balanceNum;
 
   const act = (action: "approve" | "invest" | "redeem" | "faucet") => {
+    setReceipt(null);
     setPendingAction(action);
     if (action === "approve") {
       writeContract({ address: stable, abi: ERC20_ABI, functionName: "approve", args: [vault, parsedAmount * 4n] });
@@ -293,7 +299,20 @@ export function InvestPanel({
           {(writeError as any).shortMessage ?? writeError.message}
         </p>
       )}
-      {confirmed && <p className="mt-3 text-xs text-cesto-emerald">Transaction confirmed ✓</p>}
+      {receipt && (
+        <p className="mt-3 text-xs text-cesto-emerald">
+          {receipt.action === "faucet"
+            ? "1,000 test USDC minted ✓"
+            : receipt.action === "approve"
+            ? "USDC approved ✓"
+            : receipt.action === "invest"
+            ? "Invested ✓"
+            : "Withdrawn ✓"}{" "}
+          <a href={explorerTx(receipt.hash)} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-white">
+            view on explorer ↗
+          </a>
+        </p>
+      )}
     </div>
   );
 }

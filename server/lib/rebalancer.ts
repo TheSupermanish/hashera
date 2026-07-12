@@ -44,7 +44,7 @@ async function proposeRebalance(basket: BasketDoc): Promise<Proposal> {
     maxTokens: 900,
     json: true,
     system:
-      "You are the Moltiply AI portfolio agent managing tokenized RWA baskets on HashKey Chain. " +
+      "You are the Hashera AI portfolio agent managing tokenized RWA baskets on HashKey Chain. " +
       "You are conservative: propose a rebalance ONLY when there is a clear thesis-driven reason " +
       "(major news, sustained divergence). Weight changes per asset must stay within ±500 bps. " +
       "Weights are integers in basis points and MUST sum to exactly 10000.",

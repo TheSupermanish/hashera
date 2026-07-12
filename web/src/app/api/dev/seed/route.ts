@@ -104,7 +104,7 @@ export async function POST() {
     await NewsItem.create([
       {
         title: "Micron guides Q4 revenue above estimates on HBM demand",
-        source: "Moltiply AI Digest",
+        source: "Hashera AI Digest",
         publishedAt: new Date(Date.now() - 3 * 3600_000),
         summary:
           "Micron raised guidance on high-bandwidth memory sold out through 2027. Directly supportive of the Made in America and AI Revolution baskets, where MU and the memory complex are top weights.",
@@ -115,7 +115,7 @@ export async function POST() {
       },
       {
         title: "White House announces additional 10% tariff tranche on imported semiconductors",
-        source: "Moltiply AI Digest",
+        source: "Hashera AI Digest",
         publishedAt: new Date(Date.now() - 8 * 3600_000),
         summary:
           "New tariff tranche strengthens the reshoring thesis behind Made in America (INTC, MU fabs) but raises input costs for downstream hardware. Net bullish for the basket per the AI agent's read.",
@@ -126,7 +126,7 @@ export async function POST() {
       },
       {
         title: "BoJ holds rates; yen slides past 165",
-        source: "Moltiply AI Digest",
+        source: "Hashera AI Digest",
         publishedAt: new Date(Date.now() - 20 * 3600_000),
         summary:
           "A weaker yen boosts exporter earnings for Sony, Toyota and Nintendo ADRs in the Tokyo Blue Chips basket, while pressuring MUFG's rate-normalization thesis.",

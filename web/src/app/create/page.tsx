@@ -121,7 +121,7 @@ export default function CreatePage() {
       </h1>
       <p className="mt-2 max-w-xl text-muted-foreground">
         Build your own tokenized index on HashKey Chain. Pick the assets, set the weights, and the
-        Moltiply AI agent will track and rebalance it, just like the curated indexes.
+        Hashera AI agent will track and rebalance it, just like the curated indexes.
       </p>
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_380px]">

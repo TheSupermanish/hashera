@@ -45,6 +45,10 @@ export function TradePanel({
   const [amount, setAmount] = useState("100"); // USDC for buy
   const [units, setUnits] = useState("0"); // token units for sell
   const [pending, setPending] = useState<"" | "approve" | "buy" | "sell" | "faucet">("");
+  // Persisted confirmation of the last completed tx. Kept separate from wagmi's
+  // live receipt state because the effect below calls reset() (clearing txHash),
+  // which would otherwise wipe the "confirmed" banner the instant it appears.
+  const [receipt, setReceipt] = useState<{ hash: `0x${string}`; action: "approve" | "buy" | "sell" | "faucet" } | null>(null);
   // Snapshot of trade inputs at submit time, so editing the field mid-confirm
   // doesn't corrupt the recorded amount/units/price.
   const submitted = useRef<{ usdcAmount: number; units: number; price: number } | null>(null);
@@ -106,6 +110,7 @@ export function TradePanel({
         .catch(() => {});
       submitted.current = null;
     }
+    if (pending) setReceipt({ hash: txHash, action: pending });
     setPending(""); reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [confirmed]);
@@ -121,6 +126,7 @@ export function TradePanel({
   const sellOut = previewSell ? Number(formatUnits(previewSell, 6)) : 0;
 
   const act = (a: "approve" | "buy" | "sell" | "faucet") => {
+    setReceipt(null);
     setPending(a);
     if (a === "approve") writeContract({ address: stable, abi: ERC20_ABI, functionName: "approve", args: [STOCK_STORE, parsedUsdc * 4n] });
     else if (a === "buy") {
@@ -219,14 +225,18 @@ export function TradePanel({
       )}
 
       {error && <p className="mt-3 break-words text-xs text-destructive">{(error as any).shortMessage ?? error.message}</p>}
-      {confirmed && (
+      {receipt && (
         <p className="mt-3 text-xs text-cesto-emerald">
-          Transaction confirmed ✓{" "}
-          {txHash && (
-            <a href={explorerTx(txHash)} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-white">
-              view on explorer ↗
-            </a>
-          )}
+          {receipt.action === "faucet"
+            ? "1,000 test USDC minted ✓"
+            : receipt.action === "approve"
+            ? "USDC approved ✓"
+            : receipt.action === "buy"
+            ? `Bought ${disp} ✓`
+            : `Sold ${disp} ✓`}{" "}
+          <a href={explorerTx(receipt.hash)} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-white">
+            view on explorer ↗
+          </a>
         </p>
       )}
     </div>

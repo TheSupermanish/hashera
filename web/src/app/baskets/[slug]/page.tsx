@@ -124,7 +124,7 @@ export default function BasketDetailPage({ params }: { params: { slug: string } 
                 </button>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
-                by <span className="text-white">Moltiply</span>
+                by <span className="text-white">Hashera</span>
               </p>
               <p className={`mt-3 text-sm text-muted-foreground ${expanded ? "" : "line-clamp-2"}`}>
                 {basket.description}

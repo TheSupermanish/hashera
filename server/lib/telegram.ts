@@ -34,7 +34,7 @@ function registerHandlers(b: Bot) {
   b.command("start", async (ctx) => {
     await upsertSubscriber(ctx);
     await ctx.reply(
-      `<b>Welcome to Moltiply 🧺</b>\n\n` +
+      `<b>Welcome to Hashera 🧺</b>\n\n` +
         `AI-managed RWA investment baskets on HashKey Chain. One click, straight to your wallet.\n\n` +
         `<b>Commands</b>\n` +
         `/baskets — all baskets with live returns\n` +

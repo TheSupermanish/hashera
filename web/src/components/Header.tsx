@@ -19,7 +19,7 @@ export function Header() {
       <div className="mx-auto flex h-full max-w-full items-center justify-between px-2.5 md:px-6">
         <Link href="/baskets" className="flex shrink-0 items-center rounded-md">
           <span className="font-manrope text-[22px] font-extrabold tracking-tight text-white">
-            m<span className="text-cesto-green">o</span>ltiply
+            h<span className="text-cesto-green">a</span>shera
           </span>
         </Link>
 

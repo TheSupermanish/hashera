@@ -86,7 +86,7 @@ export const SEED_BASKETS: SeedBasket[] = [
     shortDescription:
       "Factories are coming home, chips are being made in Ohio, and tariffs just hit their highest level since 1946.",
     description:
-      "Factories are coming home, chips are being made in Ohio, and tariffs just hit their highest level since 1946. This basket owns the reshoring supercycle end to end: the semiconductors being fabbed on US soil (Intel, Micron), the power infrastructure feeding the new plants (GE Vernova, Eaton, Vistra, Vertiv), the machines that build them (Caterpillar), and the only rare-earth mine in the western hemisphere (MP Materials). Every position is a synthetic RWA token on HashKey Chain, priced by NYSE/NASDAQ-linked oracles and rebalanced by the Moltiply AI agent as the policy picture evolves.",
+      "Factories are coming home, chips are being made in Ohio, and tariffs just hit their highest level since 1946. This basket owns the reshoring supercycle end to end: the semiconductors being fabbed on US soil (Intel, Micron), the power infrastructure feeding the new plants (GE Vernova, Eaton, Vistra, Vertiv), the machines that build them (Caterpillar), and the only rare-earth mine in the western hemisphere (MP Materials). Every position is a synthetic RWA token on HashKey Chain, priced by NYSE/NASDAQ-linked oracles and rebalanced by the Hashera AI agent as the policy picture evolves.",
     tags: ["RWA", "US Equities", "Reshoring"],
     allocation: [
       ["INTCon", 1500], ["MUon", 1500], ["GEVon", 1500], ["CATon", 1300],
@@ -108,13 +108,13 @@ export const SEED_BASKETS: SeedBasket[] = [
         { label: "Oracle Execution Risk", text: "tokenized-equity legs settle at oracle prints; entry fee 0.5%, legs sized to remain redeemable." },
         { label: "Smart Contract / Oracle Risk", text: "synthetic assets depend on protocol and oracle integrity." },
       ],
-      oracleNote: "Assets priced via NYSE/NASDAQ-linked oracles, avoiding thin on-chain orderbook distortion.",
+      oracleNote: "Assets priced via NYSE/NASDAQ-linked oracles, avoiding thin on-chain orderbook distortion. USDC settlement routes through HSP (HashKey Settlement Protocol) mandates for compliant, receipt-backed transfers.",
     },
     resources: [
       { label: "HashKey Chain Explorer", url: "https://hashkey.blockscout.com" },
       { label: "CHIPS Act overview", url: "https://www.nist.gov/chips" },
       { label: "Intel (INTCon) tokenized-stock pilot on HashKey Chain", url: "https://hashkey.blockscout.com/token/0x14c8a2c497eC878c2dc1b48A5EaEc6342d2B6664" },
-      { label: "Moltiply docs", url: "https://github.com/moltiply" },
+      { label: "Hashera docs", url: "https://github.com/hashera" },
     ],
   },
   {
@@ -128,7 +128,7 @@ export const SEED_BASKETS: SeedBasket[] = [
     shortDescription:
       "Portfolio tracking top stocks and ETFs from Nancy Pelosi's public disclosures under the STOCK Act.",
     description:
-      "Portfolio tracking top stocks and ETFs from Nancy Pelosi's public disclosures under the STOCK Act. Congressional trading disclosures have historically front-run major policy tailwinds; this basket mirrors the most recent filings as tokenized RWA positions on HashKey Chain. The Moltiply AI agent watches new disclosure filings and rebalances the basket automatically when fresh trades are published.",
+      "Portfolio tracking top stocks and ETFs from Nancy Pelosi's public disclosures under the STOCK Act. Congressional trading disclosures have historically front-run major policy tailwinds; this basket mirrors the most recent filings as tokenized RWA positions on HashKey Chain. The Hashera AI agent watches new disclosure filings and rebalances the basket automatically when fresh trades are published.",
     tags: ["RWA", "US Equities", "Policy"],
     allocation: [
       ["NVDAon", 2000], ["AVGOon", 1500], ["MSFTon", 1500], ["GOOGLon", 1200],
@@ -147,7 +147,7 @@ export const SEED_BASKETS: SeedBasket[] = [
         { label: "Options translation", text: "disclosed call options are mapped to spot-equivalent weights." },
         { label: "Smart Contract / Oracle Risk", text: "synthetic assets depend on protocol and oracle integrity." },
       ],
-      oracleNote: "Assets priced via NYSE/NASDAQ-linked oracles, avoiding thin on-chain orderbook distortion.",
+      oracleNote: "Assets priced via NYSE/NASDAQ-linked oracles, avoiding thin on-chain orderbook distortion. USDC settlement routes through HSP (HashKey Settlement Protocol) mandates for compliant, receipt-backed transfers.",
     },
     resources: [
       { label: "STOCK Act disclosures", url: "https://disclosures-clerk.house.gov" },
@@ -166,7 +166,7 @@ export const SEED_BASKETS: SeedBasket[] = [
     shortDescription:
       "The full AI compute stack as tokenized RWAs: GPUs, foundry, hyperscaler software and defense AI.",
     description:
-      "The AI capex supercycle is still compounding: hyperscaler datacenter budgets keep breaking records and inference demand is outpacing supply. This basket owns the full stack as tokenized RWAs on HashKey Chain: the GPU duopoly (NVIDIA, AMD), the custom-silicon winner (Broadcom), the foundry everything runs on (TSMC), the biggest software distributor of AI (Microsoft) and the defense/enterprise AI pure play (Palantir). The Moltiply AI agent monitors earnings, guidance and supply-chain news, and rebalances when the compute cycle rotates.",
+      "The AI capex supercycle is still compounding: hyperscaler datacenter budgets keep breaking records and inference demand is outpacing supply. This basket owns the full stack as tokenized RWAs on HashKey Chain: the GPU duopoly (NVIDIA, AMD), the custom-silicon winner (Broadcom), the foundry everything runs on (TSMC), the biggest software distributor of AI (Microsoft) and the defense/enterprise AI pure play (Palantir). The Hashera AI agent monitors earnings, guidance and supply-chain news, and rebalances when the compute cycle rotates.",
     tags: ["RWA", "AI", "Semiconductors"],
     allocation: [
       ["NVDAon", 2500], ["MSFTon", 2000], ["AVGOon", 1500],
@@ -185,7 +185,7 @@ export const SEED_BASKETS: SeedBasket[] = [
         { label: "Competition", text: "custom silicon and open-weight models could compress GPU margins." },
         { label: "Smart Contract / Oracle Risk", text: "synthetic assets depend on protocol and oracle integrity." },
       ],
-      oracleNote: "Assets priced via NYSE/NASDAQ-linked oracles, avoiding thin on-chain orderbook distortion.",
+      oracleNote: "Assets priced via NYSE/NASDAQ-linked oracles, avoiding thin on-chain orderbook distortion. USDC settlement routes through HSP (HashKey Settlement Protocol) mandates for compliant, receipt-backed transfers.",
     },
     resources: [
       { label: "HashKey Chain Explorer", url: "https://hashkey.blockscout.com" },
@@ -224,7 +224,7 @@ export const SEED_BASKETS: SeedBasket[] = [
         { label: "SoftBank volatility", text: "Vision Fund marks swing the NAV." },
         { label: "Smart Contract / Oracle Risk", text: "synthetic assets depend on protocol and oracle integrity." },
       ],
-      oracleNote: "Assets priced via NYSE/OTC ADR-linked oracles, avoiding thin on-chain orderbook distortion.",
+      oracleNote: "Assets priced via NYSE/OTC ADR-linked oracles, avoiding thin on-chain orderbook distortion. USDC settlement routes through HSP (HashKey Settlement Protocol) mandates for compliant, receipt-backed transfers.",
     },
     resources: [
       { label: "HashKey Chain Explorer", url: "https://hashkey.blockscout.com" },
@@ -241,9 +241,9 @@ export const SEED_BASKETS: SeedBasket[] = [
     image: "/images/baskets/solana-maxi-portfolio.webp",
     returnLabel: "Annual Return",
     shortDescription:
-      "BTC, ETH and HSK in one click. The benchmark crypto allocation, rebalanced by the Moltiply AI agent.",
+      "BTC, ETH and HSK in one click. The benchmark crypto allocation, rebalanced by the Hashera AI agent.",
     description:
-      "The benchmark crypto allocation: 50% Bitcoin, 35% Ethereum and 15% HSK, the native token of HashKey Chain. Synthetic exposure minted against USDC collateral and priced by oracle, so you get clean index-style tracking with no bridging, no CEX account and no seed-phrase juggling. The Moltiply AI agent trims and adds around momentum and funding extremes.",
+      "The benchmark crypto allocation: 50% Bitcoin, 35% Ethereum and 15% HSK, the native token of HashKey Chain. Synthetic exposure minted against USDC collateral and priced by oracle, so you get clean index-style tracking with no bridging, no CEX account and no seed-phrase juggling. The Hashera AI agent trims and adds around momentum and funding extremes.",
     tags: ["Crypto", "Index", "HSK"],
     allocation: [
       ["cBTC", 5000], ["cETH", 3500], ["cHSK", 1500],
@@ -260,7 +260,7 @@ export const SEED_BASKETS: SeedBasket[] = [
         { label: "HSK liquidity", text: "HSK is earlier-stage and less liquid than BTC/ETH." },
         { label: "Smart Contract / Oracle Risk", text: "synthetic assets depend on protocol and oracle integrity." },
       ],
-      oracleNote: "Assets priced via aggregated CEX/DEX oracle feeds.",
+      oracleNote: "Assets priced via aggregated CEX/DEX oracle feeds. USDC settlement routes through HSP (HashKey Settlement Protocol) mandates for compliant, receipt-backed transfers.",
     },
     resources: [
       { label: "HashKey Chain Explorer", url: "https://hashkey.blockscout.com" },
