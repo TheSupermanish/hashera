@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+/* Body tokens match the reference .cesto-scope exactly:
+   background hsl(147 33% 5%), foreground hsl(0 0% 98%). */
+body {
+  background-color: hsl(147 33% 5%);
+  color: hsl(0 0% 98%);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(0, 255, 106, 0.25);
+}
+
+/* Card gradient used across basket cards (326.35deg dark-green sheen). */
+.cesto-card-gradient {
+  background: linear-gradient(326.35deg, #051e16 0%, #1f3a31 98.99%);
+}
+
+/* Hero title: white with a subtle horizontal shine gradient. */
+.cesto-hero-gradient {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.7) 0%, rgb(255, 255, 255) 50%, rgba(255, 255, 255, 0.7) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Hide scrollbars on horizontal carousels while keeping scroll. */
+.cesto-no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.cesto-no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Marquee (logo strip + testimonial rows) */
+@keyframes cesto-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.cesto-marquee { animation: cesto-marquee var(--cesto-marquee-duration, 30s) linear infinite; }
+.cesto-marquee-paused:hover .cesto-marquee { animation-play-state: paused; }
+
+/* Fade-up on scroll reveal */
+@keyframes cesto-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cesto-marquee { animation: none; }
+}
