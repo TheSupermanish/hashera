@@ -19,7 +19,7 @@
     "recharts": "^3.9.2",
     "sharp": "^0.35.3",
     "viem": "^2.54.6",
-    "wagmi": "^2.19.5"
+    "wagmi": "^3.7.7"
   },
   "devDependencies": {
     "@types/node": "^20",
